@@ -17,6 +17,7 @@ limitations under the License.
 */
 
 import (
+	amqplib "github.com/rabbitmq/amqp091-go"
 	"net/http"
 	"time"
 
@@ -71,7 +72,9 @@ type SensorContext struct {
 	azureEventHubsClients common.StringKeyedMap[*eventhubs.Hub]
 	// azureServiceBusClients holds the references to active Azure Service Bus clients.
 	azureServiceBusClients common.StringKeyedMap[*servicebus.Sender]
-	metrics                *sensormetrics.Metrics
+	// amqpConnections holds references to the active amqp connection
+	amqpConnections common.StringKeyedMap[*amqplib.Connection]
+	metrics         *sensormetrics.Metrics
 }
 
 // NewSensorContext returns a new sensor execution context.
@@ -95,6 +98,7 @@ func NewSensorContext(kubeClient kubernetes.Interface, dynamicClient dynamic.Int
 		openwhiskClients:       common.NewStringKeyedMap[*whisk.Client](),
 		azureEventHubsClients:  common.NewStringKeyedMap[*eventhubs.Hub](),
 		azureServiceBusClients: common.NewStringKeyedMap[*servicebus.Sender](),
+		amqpConnections:        common.NewStringKeyedMap[*amqplib.Connection](),
 		metrics:                metrics,
 	}
 }

@@ -405,6 +405,9 @@ type TriggerTemplate struct {
 	// Email refers to the trigger designed to send an email notification
 	// +optional
 	Email *EmailTrigger `json:"email,omitempty" protobuf:"bytes,17,opt,name=email"`
+	// AMQP refers to the trigger designed to place message on AMQP subject.
+	// +optional.
+	AMQP *AMQPTrigger `json:"amqp,omitempty" protobuf:"bytes,18,opt,name=amqp"`
 }
 
 type ConditionsResetCriteria struct {
@@ -671,6 +674,57 @@ type NATSTrigger struct {
 	// TLS configuration for the NATS producer.
 	// +optional
 	TLS *apicommon.TLSConfig `json:"tls,omitempty" protobuf:"bytes,5,opt,name=tls"`
+}
+
+type AMQPTrigger struct {
+	// URL for rabbitmq service
+	URL string `json:"url,omitempty" protobuf:"bytes,1,opt,name=url"`
+	// ExchangeName is the exchange name
+	// For more information, visit https://www.rabbitmq.com/tutorials/amqp-concepts.html
+	ExchangeName string `json:"exchangeName" protobuf:"bytes,2,opt,name=exchangeName"`
+	// ExchangeType is rabbitmq exchange type
+	ExchangeType string `json:"exchangeType" protobuf:"bytes,3,opt,name=exchangeType"`
+	// Routing key for publishing
+	RoutingKey string `json:"routingKey" protobuf:"bytes,4,opt,name=routingKey"`
+	// Backoff holds parameters applied to connection.
+	// +optional
+	ConnectionBackoff *apicommon.Backoff `json:"connectionBackoff,omitempty" protobuf:"bytes,5,opt,name=connectionBackoff"`
+	// TLS configuration for the amqp client.
+	// +optional
+	TLS *apicommon.TLSConfig `json:"tls,omitempty" protobuf:"bytes,6,opt,name=tls"`
+	// Metadata holds the user defined metadata which will passed along the event payload.
+	// +optional
+	Metadata map[string]string `json:"metadata,omitempty" protobuf:"bytes,7,rep,name=metadata"`
+	// ExchangeDeclare holds the configuration for the exchange on the server
+	// For more information, visit https://pkg.go.dev/github.com/rabbitmq/amqp091-go#Channel.ExchangeDeclare
+	// +optional
+	ExchangeDeclare *AMQPExchangeDeclareConfig `json:"exchangeDeclare,omitempty" protobuf:"bytes,8,opt,name=exchangeDeclare"`
+	// Auth hosts secret selectors for username and password
+	// +optional
+	Auth *apicommon.BasicAuth `json:"auth,omitempty" protobuf:"bytes,9,opt,name=auth"`
+	// URLSecret is secret reference for rabbitmq service URL
+	URLSecret *corev1.SecretKeySelector `json:"urlSecret,omitempty" protobuf:"bytes,10,opt,name=urlSecret"`
+	// Parameters is the list of parameters that is applied to resolved AMQP trigger object.
+	Parameters []TriggerParameter `json:"parameters,omitempty" protobuf:"bytes,11,rep,name=parameters"`
+	// Payload is the list of key-value extracted from an event payload to construct the request payload.
+	Payload []TriggerParameter `json:"payload" protobuf:"bytes,12,rep,name=payload"`
+}
+
+// AMQPExchangeDeclareConfig holds the configuration for the exchange on the server
+// +k8s:openapi-gen=true
+type AMQPExchangeDeclareConfig struct {
+	// Durable keeps the exchange also after the server restarts
+	// +optional
+	Durable bool `json:"durable,omitempty" protobuf:"varint,1,opt,name=durable"`
+	// AutoDelete removes the exchange when no bindings are active
+	// +optional
+	AutoDelete bool `json:"autoDelete,omitempty" protobuf:"varint,2,opt,name=autoDelete"`
+	// Internal when true does not accept publishings
+	// +optional
+	Internal bool `json:"internal,omitempty" protobuf:"varint,3,opt,name=internal"`
+	// NowWait when true does not wait for a confirmation from the server
+	// +optional
+	NoWait bool `json:"noWait,omitempty" protobuf:"varint,4,opt,name=noWait"`
 }
 
 // CustomTrigger refers to the specification of the custom trigger.

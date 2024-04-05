@@ -103,6 +103,7 @@ var (
 	AzureEventHubsTrigger  TriggerType = "AzureEventHubs"
 	AzureServiceBusTrigger TriggerType = "AzureServiceBus"
 	EmailTrigger           TriggerType = "Email"
+	AMQPTrigger            TriggerType = "AMQP"
 )
 
 // EventBusType is the type of event bus

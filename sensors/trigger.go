@@ -17,6 +17,7 @@ package sensors
 
 import (
 	"context"
+	"github.com/argoproj/argo-events/sensors/triggers/amqp"
 
 	"go.uber.org/zap"
 
@@ -170,5 +171,15 @@ func (sensorCtx *SensorContext) GetTrigger(ctx context.Context, trigger *v1alpha
 		}
 		return result
 	}
+
+	if trigger.Template.AMQP != nil {
+		result, err := amqp.NewAMQPTrigger(sensorCtx.sensor, trigger, sensorCtx.amqpConnections, log)
+		if err != nil {
+			log.Errorw("failed to new a AMQP trigger", zap.Error(err))
+			return nil
+		}
+		return result
+	}
+
 	return nil
 }
